@@ -1,0 +1,231 @@
+import { sql } from "drizzle-orm";
+import { pgTable, text, varchar, serial, integer, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+import { relations } from "drizzle-orm";
+
+export * from "./models/auth";
+export * from "./models/chat";
+
+export const subscriptions = pgTable("subscriptions", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().unique(),
+  plan: text("plan").notNull().default("free"),
+  billingCycle: text("billing_cycle").default("monthly"),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  status: text("status").notNull().default("active"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const skillCards = pgTable("skill_cards", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  titleJa: text("title_ja").notNull(),
+  category: text("category").notNull(),
+  description: text("description").notNull(),
+  descriptionJa: text("description_ja").notNull(),
+  goodExample: text("good_example").notNull(),
+  goodExampleJa: text("good_example_ja").notNull(),
+  badExample: text("bad_example").notNull(),
+  badExampleJa: text("bad_example_ja").notNull(),
+  tips: text("tips").array().notNull(),
+  tipsJa: text("tips_ja").array().notNull(),
+  whyEffective: text("why_effective"),
+  whyEffectiveJa: text("why_effective_ja"),
+  mechanism: text("mechanism"),
+  mechanismJa: text("mechanism_ja"),
+  usageScenario: text("usage_scenario"),
+  usageScenarioJa: text("usage_scenario_ja"),
+  failurePatterns: text("failure_patterns").array(),
+  failurePatternsJa: text("failure_patterns_ja").array(),
+  checklist: text("checklist").array(),
+  checklistJa: text("checklist_ja").array(),
+  successStory: text("success_story"),
+  successStoryJa: text("success_story_ja"),
+  relatedCardIds: integer("related_card_ids").array(),
+  difficulty: text("difficulty").notNull().default("beginner"),
+  iconName: text("icon_name").notNull().default("BookOpen"),
+  isPremium: boolean("is_premium").notNull().default(false),
+  isAiGenerated: boolean("is_ai_generated").notNull().default(false),
+  sourceSessionId: integer("source_session_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const roleplayScenarios = pgTable("roleplay_scenarios", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id"),
+  title: text("title").notNull(),
+  titleJa: text("title_ja").notNull(),
+  customerName: text("customer_name").notNull(),
+  customerRole: text("customer_role").notNull(),
+  companyName: text("company_name").notNull(),
+  industry: text("industry").notNull(),
+  productService: text("product_service").notNull(),
+  situation: text("situation").notNull(),
+  difficulty: text("difficulty").notNull().default("medium"),
+  isCustom: boolean("is_custom").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const roleplaySessions = pgTable("roleplay_sessions", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  scenarioId: integer("scenario_id"),
+  mode: text("mode").notNull().default("personality"),
+  config: jsonb("config"),
+  messages: jsonb("messages").notNull().default([]),
+  feedback: jsonb("feedback"),
+  feedbackChatMessages: jsonb("feedback_chat_messages"),
+  score: integer("score"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const skillDiagnoses = pgTable("skill_diagnoses", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  sessionId: integer("session_id"),
+  listening: integer("listening").notNull().default(0),
+  questioning: integer("questioning").notNull().default(0),
+  empathy: integer("empathy").notNull().default(0),
+  closing: integer("closing").notNull().default(0),
+  overallScore: integer("overall_score").notNull().default(0),
+  feedback: text("feedback"),
+  feedbackJa: text("feedback_ja"),
+  strengths: text("strengths").array(),
+  weaknesses: text("weaknesses").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userProgress = pgTable("user_progress", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  skillCardId: integer("skill_card_id"),
+  completedAt: timestamp("completed_at"),
+  practiceDate: timestamp("practice_date").defaultNow(),
+  activityType: text("activity_type").notNull(),
+});
+
+export const userSkillProgress = pgTable("user_skill_progress", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  skillCardId: integer("skill_card_id").notNull(),
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+export const skillCardStudyLogs = pgTable("skill_card_study_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  skillCardId: integer("skill_card_id").notNull(),
+  studiedAt: timestamp("studied_at").defaultNow(),
+});
+
+export const scheduledStudies = pgTable("scheduled_studies", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  skillCardId: integer("skill_card_id").notNull(),
+  scheduledDate: text("scheduled_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const organizations = pgTable("organizations", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  createdBy: varchar("created_by").notNull(),
+  inviteCode: text("invite_code").notNull().unique(),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  subscriptionStatus: text("subscription_status"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const organizationMembers = pgTable("organization_members", {
+  id: serial("id").primaryKey(),
+  orgId: integer("org_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  role: text("role").notNull().default("member"),
+  joinedAt: timestamp("joined_at").defaultNow(),
+});
+
+export const practiceLogs = pgTable("practice_logs", {
+  id: serial("id").primaryKey(),
+  orgId: integer("org_id"),
+  userId: varchar("user_id").notNull(),
+  skillCardId: integer("skill_card_id"),
+  sessionId: integer("session_id"),
+  score: integer("score"),
+  listening: integer("listening"),
+  questioning: integer("questioning"),
+  empathy: integer("empathy"),
+  closing: integer("closing"),
+  practiceType: text("practice_type").notNull().default("roleplay"),
+  practicedAt: timestamp("practiced_at").defaultNow(),
+});
+
+export const curriculumAssignments = pgTable("curriculum_assignments", {
+  id: serial("id").primaryKey(),
+  orgId: integer("org_id").notNull(),
+  skillCardId: integer("skill_card_id").notNull(),
+  assignedBy: varchar("assigned_by").notNull(),
+  weekStart: text("week_start").notNull(),
+  weekEnd: text("week_end").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const orgNotifications = pgTable("org_notifications", {
+  id: serial("id").primaryKey(),
+  orgId: integer("org_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  type: text("type").notNull(),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertOrganizationSchema = createInsertSchema(organizations).omit({ id: true, createdAt: true });
+export const insertOrganizationMemberSchema = createInsertSchema(organizationMembers).omit({ id: true, joinedAt: true });
+export const insertPracticeLogSchema = createInsertSchema(practiceLogs).omit({ id: true, practicedAt: true });
+export const insertCurriculumAssignmentSchema = createInsertSchema(curriculumAssignments).omit({ id: true, createdAt: true });
+export const insertOrgNotificationSchema = createInsertSchema(orgNotifications).omit({ id: true, createdAt: true });
+
+export type Organization = typeof organizations.$inferSelect;
+export type InsertOrganization = z.infer<typeof insertOrganizationSchema>;
+export type OrganizationMember = typeof organizationMembers.$inferSelect;
+export type InsertOrganizationMember = z.infer<typeof insertOrganizationMemberSchema>;
+export type PracticeLog = typeof practiceLogs.$inferSelect;
+export type InsertPracticeLog = z.infer<typeof insertPracticeLogSchema>;
+export type CurriculumAssignment = typeof curriculumAssignments.$inferSelect;
+export type InsertCurriculumAssignment = z.infer<typeof insertCurriculumAssignmentSchema>;
+export type OrgNotification = typeof orgNotifications.$inferSelect;
+export type InsertOrgNotification = z.infer<typeof insertOrgNotificationSchema>;
+
+export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertSkillCardSchema = createInsertSchema(skillCards).omit({ id: true, createdAt: true });
+export const insertRoleplayScenarioSchema = createInsertSchema(roleplayScenarios).omit({ id: true, createdAt: true });
+export const insertRoleplaySessionSchema = createInsertSchema(roleplaySessions).omit({ id: true, createdAt: true });
+export const insertSkillDiagnosisSchema = createInsertSchema(skillDiagnoses).omit({ id: true, createdAt: true });
+export const insertUserProgressSchema = createInsertSchema(userProgress).omit({ id: true });
+export const insertUserSkillProgressSchema = createInsertSchema(userSkillProgress).omit({ id: true, completedAt: true });
+export const insertSkillCardStudyLogSchema = createInsertSchema(skillCardStudyLogs).omit({ id: true, studiedAt: true });
+export const insertScheduledStudySchema = createInsertSchema(scheduledStudies).omit({ id: true, createdAt: true });
+
+export type Subscription = typeof subscriptions.$inferSelect;
+export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
+export type SkillCard = typeof skillCards.$inferSelect;
+export type InsertSkillCard = z.infer<typeof insertSkillCardSchema>;
+export type RoleplayScenario = typeof roleplayScenarios.$inferSelect;
+export type InsertRoleplayScenario = z.infer<typeof insertRoleplayScenarioSchema>;
+export type RoleplaySession = typeof roleplaySessions.$inferSelect;
+export type InsertRoleplaySession = z.infer<typeof insertRoleplaySessionSchema>;
+export type SkillDiagnosis = typeof skillDiagnoses.$inferSelect;
+export type InsertSkillDiagnosis = z.infer<typeof insertSkillDiagnosisSchema>;
+export type UserProgress = typeof userProgress.$inferSelect;
+export type InsertUserProgress = z.infer<typeof insertUserProgressSchema>;
+export type UserSkillProgress = typeof userSkillProgress.$inferSelect;
+export type InsertUserSkillProgress = z.infer<typeof insertUserSkillProgressSchema>;
+export type SkillCardStudyLog = typeof skillCardStudyLogs.$inferSelect;
+export type InsertSkillCardStudyLog = z.infer<typeof insertSkillCardStudyLogSchema>;
+export type ScheduledStudy = typeof scheduledStudies.$inferSelect;
+export type InsertScheduledStudy = z.infer<typeof insertScheduledStudySchema>;

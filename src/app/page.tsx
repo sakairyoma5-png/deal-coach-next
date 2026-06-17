@@ -1,64 +1,266 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Zap, Sparkles, TrendingUp, Shield, Building2, CheckCircle2, ArrowRight, BookOpen, MessageSquare, BarChart3, Calendar, Target, Users, ClipboardList, Eye, LineChart } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
-export default function Home() {
+const features = [
+  {
+    icon: BookOpen,
+    title: "スキルカード学習",
+    description: "SPIN営業やミラーリングなど、実践的な営業テクニックを体系的に学べます。良い例・悪い例で理解が深まります。",
+    gradient: "from-blue-500/10 to-cyan-500/10 dark:from-blue-500/20 dark:to-cyan-500/20",
+    iconColor: "text-blue-500",
+  },
+  {
+    icon: MessageSquare,
+    title: "AIロープレ練習",
+    description: "AIが顧客役を務める模擬商談で実践力を磨きます。難易度設定やカスタムシナリオにも対応。",
+    gradient: "from-violet-500/10 to-purple-500/10 dark:from-violet-500/20 dark:to-purple-500/20",
+    iconColor: "text-violet-500",
+  },
+  {
+    icon: BarChart3,
+    title: "スキル診断・分析",
+    description: "傾聴力・質問力・共感力・クロージング力の4軸でAIが評価。弱点を可視化して効率的に改善。",
+    gradient: "from-emerald-500/10 to-green-500/10 dark:from-emerald-500/20 dark:to-green-500/20",
+    iconColor: "text-emerald-500",
+  },
+  {
+    icon: Sparkles,
+    title: "AIレコメンド",
+    description: "あなたの学習データを分析し、最適な学習プランをAIが提案。効率的にスキルアップできます。",
+    gradient: "from-amber-500/10 to-orange-500/10 dark:from-amber-500/20 dark:to-orange-500/20",
+    iconColor: "text-amber-500",
+  },
+  {
+    icon: Calendar,
+    title: "学習カレンダー",
+    description: "日々の学習状況をカレンダーで可視化。継続的な学習習慣の形成をサポートします。",
+    gradient: "from-rose-500/10 to-pink-500/10 dark:from-rose-500/20 dark:to-pink-500/20",
+    iconColor: "text-rose-500",
+  },
+  {
+    icon: Target,
+    title: "カスタムシナリオ",
+    description: "あなたの商品・顧客情報を登録して、実際の商談に近いシナリオでロープレ練習ができます。",
+    gradient: "from-sky-500/10 to-indigo-500/10 dark:from-sky-500/20 dark:to-indigo-500/20",
+    iconColor: "text-sky-500",
+  },
+];
+
+const enterpriseFeatures = [
+  {
+    icon: BarChart3,
+    title: "管理者ダッシュボード",
+    description: "メンバー全員のスキルスコア・練習回数・成長推移をリアルタイムで把握。データに基づいたチーム育成が可能です。",
+  },
+  {
+    icon: Users,
+    title: "メンバースコア管理",
+    description: "傾聴・質問・共感・クロージングの4軸でメンバーごとのスキルを可視化。強み・弱みを一目で把握できます。",
+  },
+  {
+    icon: ClipboardList,
+    title: "カリキュラム指定",
+    description: "週ごとに学習すべきスキルカードを指定。チーム全体で統一されたトレーニングプランを実行できます。",
+  },
+  {
+    icon: Eye,
+    title: "未実施者の即時把握",
+    description: "誰がカリキュラムを完了していないか一目でわかる。フォローアップが必要なメンバーを見逃しません。",
+  },
+  {
+    icon: LineChart,
+    title: "成長推移チャート",
+    description: "週次・月次でチームと個人のスコア変化を折れ線グラフで可視化。トレーニングの効果を定量的に測定。",
+  },
+  {
+    icon: CheckCircle2,
+    title: "履修率トラッキング",
+    description: "カリキュラムの達成率をプログレスバーで表示。チーム全体の学習進捗を一目で確認できます。",
+  },
+];
+
+export default function LandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-background">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
+              <Zap className="w-4 h-4 text-primary-foreground" />
+            </div>
+            <span className="font-bold text-lg tracking-tight">DealCoach</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href="/guide" className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:inline">
+              使い方ガイド
+            </Link>
+            <ThemeToggle />
+            <Link href="/login">
+              <Button variant="outline">ログイン</Button>
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+      </header>
+
+      <main className="pt-14">
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-violet-500/5 dark:from-primary/10 dark:to-violet-500/10" />
+          <div className="relative max-w-6xl mx-auto px-4 py-20 md:py-32">
+            <div className="max-w-3xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+                <Sparkles className="w-3.5 h-3.5" />
+                AI搭載の次世代セールストレーニング
+              </div>
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
+                営業力を、
+                <span className="text-primary">AIで</span>
+                <br />
+                次のレベルへ
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+                AIが顧客役を務めるリアルなロープレ練習と、
+                4軸のスキル診断であなたの営業力を可視化。
+                データドリブンで効率的にスキルアップ。
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Link href="/login">
+                  <Button size="lg" className="gap-2 text-base px-8">
+                    無料で始める
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+                <Link href="#features">
+                  <Button size="lg" variant="outline" className="text-base px-8">
+                    機能を見る
+                  </Button>
+                </Link>
+              </div>
+              <div className="flex items-center justify-center gap-6 mt-8 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5" />
+                  無料プランあり
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5" />
+                  クレジットカード不要
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="features" className="py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl md:text-3xl font-bold mb-3">
+                6つの主要機能
+              </h2>
+              <p className="text-muted-foreground max-w-xl mx-auto">
+                DealCoachは営業スキルの習得に必要な全てを提供します
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {features.map((feature) => {
+                const Icon = feature.icon;
+                return (
+                  <Card key={feature.title} className="p-5 hover-elevate">
+                    <div className={`w-10 h-10 rounded-md bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4`}>
+                      <Icon className={`w-5 h-5 ${feature.iconColor}`} />
+                    </div>
+                    <h3 className="font-semibold text-base mb-2">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section id="enterprise" className="py-16 md:py-24 bg-muted/30">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400 text-sm font-medium mb-4">
+                <Building2 className="w-3.5 h-3.5" />
+                法人・チーム向け
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-3">
+                チームの営業力を、まとめて底上げ
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                管理者ダッシュボードでメンバーの学習状況を一元管理。
+                カリキュラム指定とスコア分析で、組織全体の営業力を効率的に向上させます。
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+              {enterpriseFeatures.map((feature) => {
+                const Icon = feature.icon;
+                return (
+                  <Card key={feature.title} className="p-5 hover-elevate">
+                    <div className="w-10 h-10 rounded-md bg-gradient-to-br from-violet-500/10 to-purple-500/10 dark:from-violet-500/20 dark:to-purple-500/20 flex items-center justify-center mb-4">
+                      <Icon className="w-5 h-5 text-violet-500" />
+                    </div>
+                    <h3 className="font-semibold text-base mb-2">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              <span className="text-sm font-medium text-primary">今すぐ始めよう</span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+              あなたの営業力を変える第一歩
+            </h2>
+            <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
+              無料プランで今すぐスタート。AIがあなたの営業スキルを分析し、成長をサポートします。
+            </p>
+            <Link href="/login">
+              <Button size="lg" className="gap-2 text-base px-8">
+                無料で始める
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+        <footer className="py-8 border-t border-border">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
+                  <Zap className="w-3 h-3 text-primary-foreground" />
+                </div>
+                <span className="font-semibold text-sm">DealCoach</span>
+              </div>
+              <div className="flex items-center gap-4 flex-wrap justify-center">
+                <Link href="/guide" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  使い方ガイド
+                </Link>
+                <Link href="/terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  利用規約
+                </Link>
+                <Link href="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  プライバシーポリシー
+                </Link>
+                <Link href="/legal" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  特定商取引法に基づく表記
+                </Link>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground text-center mt-4">
+              &copy; 2026 DealCoach. All rights reserved.
+            </p>
+          </div>
+        </footer>
       </main>
     </div>
   );
