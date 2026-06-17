@@ -21,16 +21,42 @@ const AuthContext = createContext<AuthContextValue>({
   refreshUser: async () => {},
 });
 
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("timeout")), ms)),
+  ]);
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   const refreshUser = useCallback(async () => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    setUser(user);
-    setIsLoading(false);
+    try {
+      const supabase = createClient();
+      // Use getSession() first (reads from cookies, no network call)
+      const { data: { session } } = await withTimeout(
+        supabase.auth.getSession(),
+        5000
+      );
+      if (session?.user) {
+        setUser(session.user);
+      } else {
+        // Fallback: try getUser() which verifies with the server
+        const { data: { user } } = await withTimeout(
+          supabase.auth.getUser(),
+          5000
+        );
+        setUser(user);
+      }
+    } catch (err) {
+      console.warn("Auth check failed (timeout or error), treating as unauthenticated", err);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
