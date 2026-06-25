@@ -1,49 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Zap } from "lucide-react";
 
 export default function LoginPage() {
-  const { user, isLoading } = useAuth();
   const router = useRouter();
   const [loggingIn, setLoggingIn] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      router.push("/dashboard");
-    }
-  }, [user, router]);
-
-  const handleGoogleAuth = async (action: "login" | "signup") => {
+  const handleGoogleAuth = async () => {
     setLoggingIn(true);
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) {
-        console.error("Auth error:", error);
-        setLoggingIn(false);
-        return;
-      }
-      if (data?.url) {
-        window.location.href = data.url;
-      }
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      // Build the OAuth URL directly — no SDK call needed
+      const url = `${supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo)}`;
+      window.location.href = url;
     } catch (err) {
-      console.error("Auth exception:", err);
+      console.error("Auth error:", err);
       setLoggingIn(false);
     }
   };
 
-  // Show content even while loading — auth check happens in background
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-sm p-8">
@@ -61,7 +41,7 @@ export default function LoginPage() {
           <Button
             className="w-full gap-2"
             size="lg"
-            onClick={() => handleGoogleAuth("login")}
+            onClick={handleGoogleAuth}
             disabled={loggingIn}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -77,7 +57,7 @@ export default function LoginPage() {
             variant="outline"
             className="w-full gap-2"
             size="lg"
-            onClick={() => handleGoogleAuth("signup")}
+            onClick={handleGoogleAuth}
             disabled={loggingIn}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
